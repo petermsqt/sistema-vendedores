@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Vendedores</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background-color: #002060;
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .btn {
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #0052a3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            background-color: #002060;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px 8px 0 0;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .vendor-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .vendor-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s;
+        }
+
+        .vendor-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .vendor-info h3 {
+            margin-bottom: 0.25rem;
+            color: #002060;
+        }
+
+        .vendor-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid #ddd;
+            font-size: 0.9rem;
+        }
+
+        .table th {
+            background-color: #002060;
+            color: white;
+            font-weight: bold;
+        }
+
+        .table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .badge-success {
+            background-color: #c6efce;
+            color: #155724;
+        }
+
+        .badge-danger {
+            background-color: #ffc7ce;
+            color: #721c24;
+        }
+
+        .total-row {
+            background-color: #000 !important;
+            color: white !important;
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #002060;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .file-input {
+            margin: 1rem 0;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .table {
+                font-size: 0.8rem;
+            }
+            
+            .table th,
+            .table td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>Sistema de Vendedores</h1>
+            <div>
+                <button class="btn" onclick="showUploadModal()">Atualizar Dados</button>
+                <button class="btn btn-secondary" onclick="showVendedoresList()">Lista de Vendedores</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Lista de Vendedores -->
+        <div id="vendedores-list" class="card">
+            <div class="card-header">
+                Lista de Vendedores
+            </div>
+            <div class="card-content">
+                <input type="text" id="search-input" class="search-box" placeholder="Buscar vendedor por nome ou código...">
+                <div id="vendedores-container" class="vendor-list">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Carregando vendedores...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detalhes do Vendedor -->
+        <div id="vendedor-details" class="hidden">
+            <div class="card">
+                <div class="card-header">
+                    <span id="vendedor-nome">Detalhes do Vendedor</span>
+                    <button class="btn btn-secondary" onclick="showVendedoresList()" style="float: right;">Voltar</button>
+                </div>
+                <div class="card-content">
+                    <div id="vendedor-content">
+                        <!-- Conteúdo será carregado dinamicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Upload -->
+        <div id="upload-modal" class="hidden">
+            <div class="card">
+                <div class="card-header">
+                    Atualizar Dados da Planilha
+                    <button class="btn btn-secondary" onclick="hideUploadModal()" style="float: right;">Fechar</button>
+                </div>
+                <div class="card-content">
+                    <div class="upload-area">
+                        <h3>Selecione a nova planilha Excel</h3>
+                        <p>Formatos aceitos: .xlsx, .xlsm</p>
+                        <input type="file" id="file-input" class="file-input" accept=".xlsx,.xlsm">
+                        <br>
+                        <button class="btn" onclick="uploadFile()">Fazer Upload</button>
+                    </div>
+                    <div id="upload-result"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let vendedoresData = [];
+        let currentView = 'list';
+
+        // Carregar vendedores na inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            loadVendedores();
+            setupSearch();
+        });
+
+        async function loadVendedores() {
+            try {
+                const response = await fetch('/api/vendedores');
+                vendedoresData = await response.json();
+                displayVendedores(vendedoresData);
+            } catch (error) {
+                console.error('Erro ao carregar vendedores:', error);
+                document.getElementById('vendedores-container').innerHTML = 
+                    '<p>Erro ao carregar dados. Verifique se há dados carregados no sistema.</p>';
+            }
+
+        function displayVendedores(vendedores) {
+            const container = document.getElementById('vendedores-container');
+            
+            if (vendedores.length === 0) {
+                container.innerHTML = '<p>Nenhum vendedor encontrado. Faça upload de uma planilha para carregar os dados.</p>';
+                return;
+            }
+
+            const html = vendedores.map(vendedor => `
+                <div class="vendor-item" onclick="showVendedorDetails(${vendedor.codigo})">
+                    <div class="vendor-info">
+                        <h3>Código: ${vendedor.codigo}</h3>
+                        <p>${vendedor.nome}</p>
+                    </div>
+                    <button class="btn">Ver Detalhes</button>
+                </div>
+            `).join('');
+
+            container.innerHTML = html;
+        }
+
+        function setupSearch() {
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const filteredVendedores = vendedoresData.filter(vendedor => 
+                    vendedor.nome.toLowerCase().includes(searchTerm) || 
+                    vendedor.codigo.toString().includes(searchTerm)
+                );
+                displayVendedores(filteredVendedores);
+            });
+        }
+
+        async function showVendedorDetails(codigo) {
+            try {
+                const response = await fetch(`/api/vendedores/${codigo}`);
+                const vendedor = await response.json();
+                
+                if (vendedor.error) {
+                    alert('Vendedor não encontrado');
+                    return;
+                }
+
+                document.getElementById('vendedor-nome').textContent = 
+                    `${vendedor.nome_vendedor} (Código: ${vendedor.codigo_vendedor})`;
+                
+                const content = `
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <div class="card-header">Campanhas e Prêmios</div>
+                        <div class="card-content">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Indústria</th>
+                                        <th>Cota</th>
+                                        <th>Realizado</th>
+                                        <th>Saldo</th>
+                                        <th>Prêmio Valor</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${vendedor.campanhas.map(campanha => `
+                                        <tr>
+                                            <td>${campanha['Indústria']}</td>
+                                            <td>${campanha['COTA']}</td>
+                                            <td>${campanha['REALIZADO']}</td>
+                                            <td>${campanha['SALDO']}</td>
+                                            <td>${campanha['PREMIO VALOR']}</td>
+                                            <td>
+                                                <span class="badge ${campanha['PREMIO STATUS'] === 'Ativo' ? 'badge-success' : 'badge-danger'}">
+                                                    ${campanha['PREMIO STATUS']}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                    <tr class="total-row">
+                                        <td colspan="4"><strong>TOTAL PREMIAÇÃO</strong></td>
+                                        <td colspan="2"><strong>${vendedor.total_premiacao}</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">Gatilhos</div>
+                        <div class="card-content">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Gatilho</th>
+                                        <th>Meta</th>
+                                        <th>Realizado</th>
+                                        <th>Falta</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${vendedor.gatilhos.map(gatilho => `
+                                        <tr>
+                                            <td>${gatilho['Gatilho']}</td>
+                                            <td>${gatilho['Meta Gatilho']}</td>
+                                            <td>${gatilho['Realizado Gatilho']}</td>
+                                            <td>${gatilho['Falta Gatilho']}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('vendedor-content').innerHTML = content;
+                document.getElementById('vendedores-list').classList.add('hidden');
+                document.getElementById('vendedor-details').classList.remove('hidden');
+                currentView = 'details';
+
+            } catch (error) {
+                console.error('Erro ao carregar detalhes do vendedor:', error);
+                alert('Erro ao carregar detalhes do vendedor');
+            }
+        }
+
+        function showVendedoresList() {
+            document.getElementById('vendedor-details').classList.add('hidden');
+            document.getElementById('upload-modal').classList.add('hidden');
+            document.getElementById('vendedores-list').classList.remove('hidden');
+            currentView = 'list';
+        }
+
+        function showUploadModal() {
+            document.getElementById('vendedores-list').classList.add('hidden');
+            document.getElementById('vendedor-details').classList.add('hidden');
+            document.getElementById('upload-modal').classList.remove('hidden');
+            currentView = 'upload';
+        }
+
+        function hideUploadModal() {
+            showVendedoresList();
+        }
+
+        async function uploadFile() {
+            const fileInput = document.getElementById('file-input');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Por favor, selecione um arquivo');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const resultDiv = document.getElementById('upload-result');
+            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Processando planilha...</p></div>';
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <strong>Sucesso!</strong> ${result.message}
+                            <br>Vendedores carregados: ${result.vendedores_count}
+                        </div>
+                    `;
+                    // Recarregar a lista de vendedores
+                    setTimeout(() => {
+                        loadVendedores();
+                        hideUploadModal();
+                    }, 2000);
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <strong>Erro!</strong> ${result.error}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Erro no upload:', error);
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>Erro!</strong> Falha na comunicação com o servidor.
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
